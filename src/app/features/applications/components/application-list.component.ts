@@ -12,50 +12,76 @@ import { application } from '../models/application.model';
   standalone: true,
   imports: [CommonModule, FormsModule, PriorityPipe, HighlightDirective],
   template: `
-    <!-- Formulaire d'ajout -->
-    <div class="mb-6 p-4 bg-white rounded-lg shadow">
-      <h2 class="text-lg font-semibold mb-4">Ajouter une tâche</h2>
-      <form (ngSubmit)="onAddapplication()" #applicationForm="ngForm" class="flex flex-col md:flex-row gap-3">
+    <!-- Toolbar with search and actions -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-3">
+      <!-- Search bar -->
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        placeholder="Rechercher..."
+        class="w-full md:w-1/3 px-3 py-2 border rounded-md"
+      />
+
+      <!-- Buttons -->
+      <div class="flex gap-3">
+        <button
+          (click)="openModal()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          + Ajouter
+        </button>
+        <button
+          class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+        >
+          Exporter
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Add -->
+    <div
+      *ngIf="showModal"
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-md w-80">
+        <h2 class="text-lg font-semibold mb-4">Nouvelle tâche</h2>
+
         <input
           type="text"
           [(ngModel)]="newapplicationTitle"
-          name="title"
-          required
           placeholder="Titre"
-          class="flex-1 px-3 py-2 border rounded-md"
+          class="w-full px-3 py-2 mb-3 border rounded-md"
         />
         <input
           type="text"
           [(ngModel)]="newapplicationDescription"
-          name="description"
           placeholder="Description"
-          class="flex-1 px-3 py-2 border rounded-md"
+          class="w-full px-3 py-2 mb-3 border rounded-md"
         />
-        <select
-          [(ngModel)]="newapplicationPriority"
-          name="priority"
-          class="px-3 py-2 border rounded-md"
-        >
-          <option value="low">Alternance</option>
-          <option value="medium">Stage</option>
-          <option value="high">CDI</option>
-        </select>
-        <button
-          type="submit"
-          [disabled]="!applicationForm.form.valid"
-          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-        >
-          Ajouter
-        </button>
-      </form>
+
+        <div class="flex justify-end gap-2">
+          <button
+            (click)="closeModal()"
+            class="px-3 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+          >
+            Annuler
+          </button>
+          <button
+            (click)="onAddapplication(); closeModal()"
+            class="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Ajouter
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Dashboard des statistiques -->
     <div class="mb-8">
-      <h2 class="text-2xl font-bold text-gray-900 mb-4">Statistiques en temps réel</h2>
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Résumé</h2>
       <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-sm font-medium text-gray-500">Envoyées</h3>
+          <h3 class="text-sm font-medium text-gray-500">Somme</h3>
           <p class="text-2xl font-bold text-gray-900">{{ applicationService.applicationstats().total }}</p>
         </div>
         <div class="bg-white p-4 rounded-lg shadow">
@@ -66,116 +92,67 @@ import { application } from '../models/application.model';
           <h3 class="text-sm font-medium text-gray-500">Entretiens</h3>
           <p class="text-2xl font-bold text-black-600">{{ applicationService.applicationstats().inProgress }}</p>
         </div>
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-sm font-medium text-gray-500">Priorité haute</h3>
-          <p class="text-2xl font-bold text-black-600">{{ applicationService.applicationstats().highPriority }}</p>
-        </div>
       </div>
     </div>
 
     <!-- Colonnes Kanban -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Pending -->
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'application')">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Candidatures envoyée
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Candidatures envoyée</h3>
         <div class="space-y-3">
-          @for (application of applicationService.pendingapplications(); track application.id) {
+          @for (application of filterApplications(applicationService.pendingapplications()); track application.id) {
             <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-gray-400 flex justify-between items-start"
                  draggable="true"
                  (dragstart)="onDragStart($event, application)"
                  (dragend)="onDragEnd($event)"
-                 [appHighlight]="application.priority === 'high' ? 'rgba(239, 68, 68, 0.1)' : 'transparent'"
-                 [appHighlightDelay]="application.priority === 'high' ? 500 : 0">
+                 [appHighlight]="application.priority === 'high' ? 'rgba(239, 68, 68, 0.1)' : 'transparent'">
               <div>
-                <div class="flex justify-between items-start mb-2">
-                  <h4 class="font-medium text-gray-900">{{ application.title }}</h4>
-                </div>
-                @if (application.description) {
-                  <p class="text-sm text-gray-600 mb-3">{{ application.description }}</p>
-                }
-                <div class="flex justify-between items-center text-xs text-gray-500">
-                  <span>Créé le {{ application.createdAt | date:'dd/MM/yyyy' }}</span>
-                </div>
+                <h4 class="font-medium text-gray-900">{{ application.title }}</h4>
+                <p *ngIf="application.description" class="text-sm text-gray-600 mb-3">{{ application.description }}</p>
               </div>
-              <button (click)="onDeleteapplication(application)" class="ml-2 text-red-600 hover:text-red-800">
-                🗑️
-              </button>
+              <button (click)="onDeleteapplication(application)" class="ml-2 text-red-600 hover:text-red-800">🗑️</button>
             </div>
           }
         </div>
       </div>
 
+      <!-- In Progress -->
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'in-progress')">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Entretiens
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Entretiens</h3>
         <div class="space-y-3">
-          @for (application of applicationService.inProgressapplications(); track application.id) {
+          @for (application of filterApplications(applicationService.inProgressapplications()); track application.id) {
             <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-black-600 flex justify-between items-start"
                  draggable="true"
                  (dragstart)="onDragStart($event, application)"
-                 (dragend)="onDragEnd($event)"
-                 [appHighlight]="application.priority === 'high' ? 'rgba(239, 68, 68, 0.1)' : 'transparent'"
-                 [appHighlightDelay]="application.priority === 'high' ? 500 : 0">
+                 (dragend)="onDragEnd($event)">
               <div>
-                <div class="flex justify-between items-start mb-2">
-                  <h4 class="font-medium text-gray-900">{{ application.title }}</h4>
-                </div>
-                @if (application.description) {
-                  <p class="text-sm text-gray-600 mb-3">{{ application.description }}</p>
-                }
-                <div class="flex justify-between items-center text-xs text-gray-500">
-                  <span>Mis à jour le {{ application.updatedAt | date:'dd/MM/yyyy' }}</span>
-                </div>
+                <h4 class="font-medium text-gray-900">{{ application.title }}</h4>
+                <p *ngIf="application.description" class="text-sm text-gray-600 mb-3">{{ application.description }}</p>
               </div>
-              <!-- Icône corbeille -->
-              <button (click)="onDeleteapplication(application)" class="ml-2 text-red-600 hover:text-red-800">
-                🗑️
-              </button>
+              <button (click)="onDeleteapplication(application)" class="ml-2 text-red-600 hover:text-red-800">🗑️</button>
             </div>
           }
         </div>
       </div>
 
+      <!-- Done -->
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'done')">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Verdict
-        </h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Verdict</h3>
         <div class="space-y-3">
-          @for (application of applicationService.completedapplications(); track application.id) {
+          @for (application of filterApplications(applicationService.completedapplications()); track application.id) {
             <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-green-400 flex justify-between items-start"
                  draggable="true"
                  (dragstart)="onDragStart($event, application)"
-                 (dragend)="onDragEnd($event)"
-                 [appHighlight]="application.priority === 'high' ? 'rgba(34, 197, 94, 0.1)' : 'transparent'"
-                 [appHighlightDelay]="application.priority === 'high' ? 500 : 0">
+                 (dragend)="onDragEnd($event)">
               <div>
-                <div class="flex justify-between items-start mb-2">
-                  <h4 class="font-medium text-gray-900 line-through">{{ application.title }}</h4>
-                  <span
-                    class="px-2 py-1 text-xs font-semibold rounded-full"
-                    [class.bg-red-100]="application.priority === 'high'"
-                    [class.bg-yellow-100]="application.priority === 'medium'"
-                    [class.bg-green-100]="application.priority === 'low'"
-                  >
-                    {{ application.priority | priority }}
-                  </span>
-                </div>
-                @if (application.description) {
-                  <p class="text-sm text-gray-600 mb-3 line-through">{{ application.description }}</p>
-                }
-                <div class="flex justify-between items-center text-xs text-gray-500">
-                  <span>Terminé le {{ application.updatedAt | date:'dd/MM/yyyy' }}</span>
-                </div>
+                <h4 class="font-medium text-gray-900 line-through">{{ application.title }}</h4>
+                <p *ngIf="application.description" class="text-sm text-gray-600 mb-3 line-through">{{ application.description }}</p>
               </div>
-              <!-- Icône corbeille -->
-              <button (click)="onDeleteapplication(application)" class="ml-2 text-red-600 hover:text-red-800">
-                🗑️
-              </button>
+              <button (click)="onDeleteapplication(application)" class="ml-2 text-red-600 hover:text-red-800">🗑️</button>
             </div>
           }
         </div>
@@ -186,11 +163,18 @@ import { application } from '../models/application.model';
 export class applicationListComponent {
   applicationService = inject(applicationService);
 
+  searchTerm = '';
+  showModal = false;
+
   newapplicationTitle = '';
   newapplicationDescription = '';
   newapplicationPriority: 'low' | 'medium' | 'high' = 'medium';
 
   draggedapplication: application | null = null;
+
+  // Modal controls
+  openModal() { this.showModal = true; }
+  closeModal() { this.showModal = false; }
 
   async onAddapplication() {
     if (!this.newapplicationTitle.trim()) return;
@@ -204,14 +188,21 @@ export class applicationListComponent {
     this.newapplicationPriority = 'medium';
   }
 
+  // Filtering logic
+  filterApplications(applications: application[]) {
+    if (!this.searchTerm.trim()) return applications;
+    return applications.filter(app =>
+      app.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      (app.description?.toLowerCase().includes(this.searchTerm.toLowerCase()))
+    );
+  }
+
+  // Drag and drop
   onDragStart(event: DragEvent, application: application) {
     this.draggedapplication = application;
     event.dataTransfer?.setData('text/plain', application.id.toString());
   }
-
-  onDragEnd(event: DragEvent) {
-    this.draggedapplication = null;
-  }
+  onDragEnd(event: DragEvent) { this.draggedapplication = null; }
 
   async onDrop(event: DragEvent, newStatus: application['status']) {
     event.preventDefault();
@@ -219,12 +210,9 @@ export class applicationListComponent {
     await this.applicationService.updateapplication(this.draggedapplication.id, { status: newStatus });
     this.draggedapplication = null;
   }
+  onDragOver(event: DragEvent) { event.preventDefault(); }
 
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-  }
-
-  // 🔴 Nouvelle fonction pour supprimer une application
+  // Delete
   async onDeleteapplication(application: application) {
     if (confirm('Voulez-vous vraiment supprimer cette tâche ?')) {
       await this.applicationService.deleteapplication(application.id);
