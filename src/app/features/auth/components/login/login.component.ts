@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { applicationService } from '../../../applications/services/application.service';
 
 @Component({
   selector: 'app-login',
@@ -86,6 +87,7 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private applicationService = inject(applicationService);
 
   loginForm: FormGroup;
   loading = signal(false);
@@ -106,6 +108,7 @@ export class LoginComponent {
       this.authService.login(this.loginForm.value).subscribe({
         next: (user) => {
           this.loading.set(false);
+          this.applicationService.setCurrentUser(user.id);
           this.router.navigate(['/applications']);
         },
         error: (err) => {
