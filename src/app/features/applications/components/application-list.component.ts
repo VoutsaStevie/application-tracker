@@ -55,15 +55,15 @@ import { application } from '../models/application.model';
       <h2 class="text-2xl font-bold text-gray-900 mb-4">Statistiques en temps réel</h2>
       <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-sm font-medium text-gray-500">Total</h3>
+          <h3 class="text-sm font-medium text-gray-500">Envoyées</h3>
           <p class="text-2xl font-bold text-gray-900">{{ applicationService.applicationstats().total }}</p>
         </div>
         <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-sm font-medium text-gray-500">Complétés</h3>
+          <h3 class="text-sm font-medium text-gray-500">Réponses</h3>
           <p class="text-2xl font-bold text-green-600">{{ applicationService.applicationstats().completed }}</p>
         </div>
         <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-sm font-medium text-gray-500">En cours</h3>
+          <h3 class="text-sm font-medium text-gray-500">Entretien</h3>
           <p class="text-2xl font-bold text-blue-600">{{ applicationService.applicationstats().inProgress }}</p>
         </div>
         <div class="bg-white p-4 rounded-lg shadow">
@@ -85,7 +85,7 @@ import { application } from '../models/application.model';
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'application')">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          À faire
+          Candidature envoyée
           <span class="text-sm text-gray-500">({{ applicationService.pendingapplications().length }})</span>
         </h3>
         <div class="space-y-3  bg-red-50 p-2 rounded">
@@ -118,7 +118,6 @@ import { application } from '../models/application.model';
                   <span>Créé le {{ application.createdAt | date:'dd/MM/yyyy' }}</span>
                 </div>
               </div>
-              <!-- Icône corbeille -->
               <button (click)="onDeleteapplication(application)" class="ml-2 text-red-600 hover:text-red-800">
                 🗑️
               </button>
@@ -127,11 +126,10 @@ import { application } from '../models/application.model';
         </div>
       </div>
 
-      <!-- En cours -->
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'in-progress')">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          En cours
+          Entretien
           <span class="text-sm text-gray-500">({{ applicationService.inProgressapplications().length }})</span>
         </h3>
         <div class="space-y-3  bg-blue-50 p-2 rounded">
@@ -173,12 +171,10 @@ import { application } from '../models/application.model';
         </div>
       </div>
 
-      <!-- Terminé -->
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'done')">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Terminé
-          <span class="text-sm text-gray-500">({{ applicationService.completedapplications().length }})</span>
+          Verdict
         </h3>
         <div class="space-y-3  bg-green-50 p-2 rounded">
           @for (application of applicationService.completedapplications(); track application.id) {
