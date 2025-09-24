@@ -36,9 +36,9 @@ import { application } from '../models/application.model';
           name="priority"
           class="px-3 py-2 border rounded-md"
         >
-          <option value="low">Basse</option>
-          <option value="medium">Moyenne</option>
-          <option value="high">Haute</option>
+          <option value="low">Alternance</option>
+          <option value="medium">Stage</option>
+          <option value="high">CDI</option>
         </select>
         <button
           type="submit"
@@ -60,35 +60,27 @@ import { application } from '../models/application.model';
         </div>
         <div class="bg-white p-4 rounded-lg shadow">
           <h3 class="text-sm font-medium text-gray-500">Réponses</h3>
-          <p class="text-2xl font-bold text-green-600">{{ applicationService.applicationstats().completed }}</p>
+          <p class="text-2xl font-bold text-black-600">{{ applicationService.applicationstats().completed }}</p>
         </div>
         <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-sm font-medium text-gray-500">Entretien</h3>
-          <p class="text-2xl font-bold text-blue-600">{{ applicationService.applicationstats().inProgress }}</p>
+          <h3 class="text-sm font-medium text-gray-500">Entretiens</h3>
+          <p class="text-2xl font-bold text-black-600">{{ applicationService.applicationstats().inProgress }}</p>
         </div>
         <div class="bg-white p-4 rounded-lg shadow">
           <h3 class="text-sm font-medium text-gray-500">Priorité haute</h3>
-          <p class="text-2xl font-bold text-red-600">{{ applicationService.applicationstats().highPriority }}</p>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-sm font-medium text-gray-500">Taux de complétion</h3>
-          <p class="text-2xl font-bold text-purple-600">
-            {{ applicationService.applicationstats().completionRate | number:'1.0-0' }}%
-          </p>
+          <p class="text-2xl font-bold text-black-600">{{ applicationService.applicationstats().highPriority }}</p>
         </div>
       </div>
     </div>
 
     <!-- Colonnes Kanban -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- À faire -->
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'application')">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Candidature envoyée
-          <span class="text-sm text-gray-500">({{ applicationService.pendingapplications().length }})</span>
+          Candidatures envoyée
         </h3>
-        <div class="space-y-3  bg-red-50 p-2 rounded">
+        <div class="space-y-3">
           @for (application of applicationService.pendingapplications(); track application.id) {
             <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-gray-400 flex justify-between items-start"
                  draggable="true"
@@ -99,17 +91,6 @@ import { application } from '../models/application.model';
               <div>
                 <div class="flex justify-between items-start mb-2">
                   <h4 class="font-medium text-gray-900">{{ application.title }}</h4>
-                  <span
-                    class="px-2 py-1 text-xs font-semibold rounded-full"
-                    [class.bg-red-100]="application.priority === 'high'"
-                    [class.text-red-800]="application.priority === 'high'"
-                    [class.bg-yellow-100]="application.priority === 'medium'"
-                    [class.text-yellow-800]="application.priority === 'medium'"
-                    [class.bg-green-100]="application.priority === 'low'"
-                    [class.text-green-800]="application.priority === 'low'"
-                  >
-                    {{ application.priority | priority }}
-                  </span>
                 </div>
                 @if (application.description) {
                   <p class="text-sm text-gray-600 mb-3">{{ application.description }}</p>
@@ -129,12 +110,11 @@ import { application } from '../models/application.model';
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'in-progress')">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          Entretien
-          <span class="text-sm text-gray-500">({{ applicationService.inProgressapplications().length }})</span>
+          Entretiens
         </h3>
-        <div class="space-y-3  bg-blue-50 p-2 rounded">
+        <div class="space-y-3">
           @for (application of applicationService.inProgressapplications(); track application.id) {
-            <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-400 flex justify-between items-start"
+            <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-black-600 flex justify-between items-start"
                  draggable="true"
                  (dragstart)="onDragStart($event, application)"
                  (dragend)="onDragEnd($event)"
@@ -143,17 +123,6 @@ import { application } from '../models/application.model';
               <div>
                 <div class="flex justify-between items-start mb-2">
                   <h4 class="font-medium text-gray-900">{{ application.title }}</h4>
-                  <span
-                    class="px-2 py-1 text-xs font-semibold rounded-full"
-                    [class.bg-red-100]="application.priority === 'high'"
-                    [class.text-red-800]="application.priority === 'high'"
-                    [class.bg-yellow-100]="application.priority === 'medium'"
-                    [class.text-yellow-800]="application.priority === 'medium'"
-                    [class.bg-green-100]="application.priority === 'low'"
-                    [class.text-green-800]="application.priority === 'low'"
-                  >
-                    {{ application.priority | priority }}
-                  </span>
                 </div>
                 @if (application.description) {
                   <p class="text-sm text-gray-600 mb-3">{{ application.description }}</p>
@@ -176,7 +145,7 @@ import { application } from '../models/application.model';
         <h3 class="text-lg font-semibold text-gray-900 mb-4">
           Verdict
         </h3>
-        <div class="space-y-3  bg-green-50 p-2 rounded">
+        <div class="space-y-3">
           @for (application of applicationService.completedapplications(); track application.id) {
             <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-green-400 flex justify-between items-start"
                  draggable="true"
@@ -190,11 +159,8 @@ import { application } from '../models/application.model';
                   <span
                     class="px-2 py-1 text-xs font-semibold rounded-full"
                     [class.bg-red-100]="application.priority === 'high'"
-                    [class.text-red-800]="application.priority === 'high'"
                     [class.bg-yellow-100]="application.priority === 'medium'"
-                    [class.text-yellow-800]="application.priority === 'medium'"
                     [class.bg-green-100]="application.priority === 'low'"
-                    [class.text-green-800]="application.priority === 'low'"
                   >
                     {{ application.priority | priority }}
                   </span>
