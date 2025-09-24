@@ -3,25 +3,20 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { applicationService } from '../services/application.service';
-import { HighlightDirective } from '../../../shared/directives/highlight.directive';
 import { application } from '../models/application.model';
 
 @Component({
   selector: 'app-application-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, HighlightDirective],
+  imports: [CommonModule, FormsModule],
   template: `
-    <!-- Toolbar with search and actions -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-3">
-      <!-- Search bar -->
       <input
         type="text"
         [(ngModel)]="searchTerm"
         placeholder="Rechercher..."
         class="w-full md:w-1/3 px-3 py-2 border rounded-md"
       />
-
-      <!-- Buttons -->
       <div class="flex gap-3">
         <button
           (click)="openModal()"
@@ -36,25 +31,23 @@ import { application } from '../models/application.model';
         </button>
       </div>
     </div>
-
-    <!-- Modal Add -->
     <div
       *ngIf="showModal"
       class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
     >
       <div class="bg-white p-6 rounded-lg shadow-md w-80">
-        <h2 class="text-lg font-semibold mb-4">Nouvelle tâche</h2>
+        <h2 class="text-lg font-semibold mb-4">Nouvelle candidature</h2>
 
         <input
           type="text"
           [(ngModel)]="newapplicationTitle"
-          placeholder="Titre"
+          placeholder="Entreprise"
           class="w-full px-3 py-2 mb-3 border rounded-md"
         />
         <input
           type="text"
           [(ngModel)]="newapplicationDescription"
-          placeholder="Description"
+          placeholder="Poste"
           class="w-full px-3 py-2 mb-3 border rounded-md"
         />
 
@@ -75,38 +68,19 @@ import { application } from '../models/application.model';
       </div>
     </div>
 
-    <!-- Dashboard des statistiques -->
-    <div class="mb-8">
-      <h2 class="text-2xl font-bold text-gray-900 mb-4">Résumé</h2>
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-sm font-medium text-gray-500">Somme</h3>
-          <p class="text-2xl font-bold text-gray-900">{{ applicationService.applicationstats().total }}</p>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-sm font-medium text-gray-500">Réponses</h3>
-          <p class="text-2xl font-bold text-black-600">{{ applicationService.applicationstats().completed }}</p>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-sm font-medium text-gray-500">Entretiens</h3>
-          <p class="text-2xl font-bold text-black-600">{{ applicationService.applicationstats().inProgress }}</p>
-        </div>
-      </div>
-    </div>
-
     <!-- Colonnes Kanban -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Pending -->
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'application')">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Candidatures envoyée</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Candidatures envoyées</h3>
+        <span class="text-sm text-gray-500">({{ applicationService.pendingapplications().length }})</span>
         <div class="space-y-3">
           @for (application of filterApplications(applicationService.pendingapplications()); track application.id) {
             <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-gray-400 flex justify-between items-start"
                  draggable="true"
                  (dragstart)="onDragStart($event, application)"
                  (dragend)="onDragEnd($event)"
-                 [appHighlight]="application.priority === 'high' ? 'rgba(239, 68, 68, 0.1)' : 'transparent'">
+            >
               <div>
                 <h4 class="font-medium text-gray-900">{{ application.title }}</h4>
                 <p *ngIf="application.description" class="text-sm text-gray-600 mb-3">{{ application.description }}</p>
@@ -117,7 +91,6 @@ import { application } from '../models/application.model';
         </div>
       </div>
 
-      <!-- In Progress -->
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'in-progress')">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Entretiens</h3>
@@ -137,7 +110,6 @@ import { application } from '../models/application.model';
         </div>
       </div>
 
-      <!-- Done -->
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'done')">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Verdict</h3>
@@ -211,7 +183,6 @@ export class applicationListComponent {
   }
   onDragOver(event: DragEvent) { event.preventDefault(); }
 
-  // Delete
   async onDeleteapplication(application: application) {
     if (confirm('Voulez-vous vraiment supprimer cette tâche ?')) {
       await this.applicationService.deleteapplication(application.id);
