@@ -8,9 +8,9 @@ import { User } from '../../../features/auth/models/user.model';
   standalone: true,
   imports: [RouterLink],
   template: `
-    <header class="bg-blue-600 text-white p-4">
+    <header class="bg-green-600 text-white p-4">
       <div class="container mx-auto flex justify-between items-center">
-        <h1 class="text-2xl font-bold">AA-ApplicationApp</h1>
+        <h1 class="text-2xl font-bold">AT-ApplicationTrack</h1>
         <nav>
           <ul class="flex space-x-4">
             @if (currentUser()) {
