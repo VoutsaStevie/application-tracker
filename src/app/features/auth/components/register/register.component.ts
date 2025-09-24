@@ -1,11 +1,23 @@
+// src/app/features/auth/components/register.component.ts
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
+// Validateur personnalisé pour la confirmation de mot de passe
+function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+  const password = control.get('password');
+  const confirmPassword = control.get('confirmPassword');
+
+  if (password && confirmPassword && password.value !== confirmPassword.value) {
+    return { passwordMismatch: true };
+  }
+  return null;
+}
+
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
@@ -13,10 +25,30 @@ import { AuthService } from '../../services/auth.service';
       <div class="max-w-md w-full space-y-8">
         <div>
           <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Connexion à votre compte
+            Créer un compte
           </h2>
         </div>
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+          <!-- Nom -->
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">
+              Nom complet
+            </label>
+            <input
+              id="name"
+              type="text"
+              formControlName="name"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              [class.border-red-500]="isFieldInvalid('name')"
+            />
+            @if (isFieldInvalid('name')) {
+              <p class="mt-1 text-sm text-red-600">
+                {{ getFieldError('name') }}
+              </p>
+            }
+          </div>
+
           <!-- Email -->
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">
@@ -55,18 +87,37 @@ import { AuthService } from '../../services/auth.service';
             }
           </div>
 
+          <!-- Confirm Password -->
+          <div>
+            <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
+              Confirmer le mot de passe
+            </label>
+            <input
+              id="confirmPassword"
+              type="password"
+              formControlName="confirmPassword"
+              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              [class.border-red-500]="isFieldInvalid('confirmPassword')"
+            />
+            @if (isFieldInvalid('confirmPassword')) {
+              <p class="mt-1 text-sm text-red-600">
+                {{ getFieldError('confirmPassword') }}
+              </p>
+            }
+          </div>
+
           <!-- Submit Button -->
           <div>
             <button
               type="submit"
-              [disabled]="loginForm.invalid || loading()"
+              [disabled]="registerForm.invalid || loading()"
               class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               @if (loading()) {
                 <span class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
-                Connexion en cours...
+                Création en cours...
               } @else {
-                Se connecter
+                Créer le compte
               }
             </button>
           </div>
@@ -82,51 +133,56 @@ import { AuthService } from '../../services/auth.service';
     </div>
   `
 })
-export class LoginComponent {
+export class RegisterComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  loginForm: FormGroup;
+  registerForm: FormGroup;
   loading = signal(false);
   error = signal<string>('');
 
   constructor() {
-    this.loginForm = this.fb.group({
+    this.registerForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
+    }, { validators: passwordMatchValidator });
   }
 
   onSubmit() {
-    if (this.loginForm.valid) {
+    if (this.registerForm.valid) {
       this.loading.set(true);
       this.error.set('');
 
-      this.authService.login(this.loginForm.value).subscribe({
+      const { confirmPassword, ...userData } = this.registerForm.value;
+
+      this.authService.register(userData).subscribe({
         next: (user) => {
           this.loading.set(false);
           this.router.navigate(['/applications']);
         },
         error: (err) => {
           this.loading.set(false);
-          this.error.set(err.message || 'Erreur de connexion');
+          this.error.set(err.message || 'Erreur lors de la création du compte');
         }
       });
     }
   }
 
   isFieldInvalid(fieldName: string): boolean {
-    const field = this.loginForm.get(fieldName);
+    const field = this.registerForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
   getFieldError(fieldName: string): string {
-    const field = this.loginForm.get(fieldName);
+    const field = this.registerForm.get(fieldName);
     if (field?.errors) {
       if (field.errors['required']) return 'Ce champ est requis';
       if (field.errors['email']) return 'Format d\'email invalide';
       if (field.errors['minlength']) return `Minimum ${field.errors['minlength'].requiredLength} caractères`;
+      if (field.errors['passwordMismatch']) return 'Les mots de passe ne correspondent pas';
     }
     return '';
   }
