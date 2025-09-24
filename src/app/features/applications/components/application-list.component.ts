@@ -3,14 +3,13 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { applicationService } from '../services/application.service';
-import { PriorityPipe } from '../../../shared/pipes/priority.pipe';
 import { HighlightDirective } from '../../../shared/directives/highlight.directive';
 import { application } from '../models/application.model';
 
 @Component({
   selector: 'app-application-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, PriorityPipe, HighlightDirective],
+  imports: [CommonModule, FormsModule, HighlightDirective],
   template: `
     <!-- Toolbar with search and actions -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-3">
