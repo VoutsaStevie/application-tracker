@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "application-Tracker": {
+    "application-list-app": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -38,7 +38,8 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json"
             },
             "development": {
               "optimization": false,
@@ -52,10 +53,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "application-Tracker:build:production"
+              "buildTarget": "application-list-app:build:production"
             },
             "development": {
-              "buildTarget": "application-Tracker:build:development"
+              "buildTarget": "application-list-app:build:development"
             }
           },
           "defaultConfiguration": "development"
