@@ -25,6 +25,7 @@ import { application } from '../models/application.model';
           + Ajouter
         </button>
         <button
+          (click)="exportApplications()"
           class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
         >
           Exporter
@@ -68,7 +69,6 @@ import { application } from '../models/application.model';
       </div>
     </div>
 
-    <!-- Colonnes Kanban -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'application')">
@@ -125,8 +125,8 @@ import { application } from '../models/application.model';
                  (dragstart)="onDragStart($event, application)"
                  (dragend)="onDragEnd($event)">
               <div>
-                <h4 class="font-medium text-gray-900 line-through">{{ application.title }}</h4>
-                <p *ngIf="application.description" class="text-sm text-gray-600 mb-3 line-through">{{ application.description }}</p>
+                <h4 class="font-medium text-gray-900">{{ application.title }}</h4>
+                <p *ngIf="application.description" class="text-sm text-gray-600 mb-3">{{ application.description }}</p>
               </div>
               <button (click)="onDeleteapplication(application)" class="ml-2 text-red-600 hover:text-red-800">🗑️</button>
             </div>
@@ -148,7 +148,6 @@ export class applicationListComponent {
 
   draggedapplication: application | null = null;
 
-  // Modal controls
   openModal() { this.showModal = true; }
   closeModal() { this.showModal = false; }
 
@@ -164,7 +163,6 @@ export class applicationListComponent {
     this.newapplicationPriority = 'medium';
   }
 
-  // Filtering logic
   filterApplications(applications: application[]) {
     if (!this.searchTerm.trim()) return applications;
     return applications.filter(app =>
@@ -173,7 +171,6 @@ export class applicationListComponent {
     );
   }
 
-  // Drag and drop
   onDragStart(event: DragEvent, application: application) {
     this.draggedapplication = application;
     event.dataTransfer?.setData('text/plain', application.id.toString());
@@ -193,4 +190,31 @@ export class applicationListComponent {
       await this.applicationService.deleteapplication(application.id);
     }
   }
+
+    async exportApplications() {
+    const allApplications = [
+      ...this.applicationService.pendingapplications(),
+      ...this.applicationService.inProgressapplications(),
+      ...this.applicationService.completedapplications(),
+    ];
+
+    const header = ['Entreprise', 'Poste', 'Contrat'];
+    const rows = allApplications.map(app => [
+      `"${app.title}"`,
+      `"${app.description || ''}"`,
+      app.priority,
+    ]);
+
+    const csvContent = [header, ...rows]
+      .map(row => row.join(';'))
+      .join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'applications_export.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
 }
