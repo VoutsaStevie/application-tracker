@@ -150,7 +150,7 @@ export class applicationListComponent {
 
   newapplicationTitle = '';
   newapplicationDescription = '';
-  newapplicationPriority: 'low' | 'medium' | 'high' = 'medium';
+  newapplicationPriority: 'job' | 'stage' | 'high' = 'stage';
 
   draggedapplication: application | null = null;
 
@@ -166,7 +166,7 @@ export class applicationListComponent {
     });
     this.newapplicationTitle = '';
     this.newapplicationDescription = '';
-    this.newapplicationPriority = 'medium';
+    this.newapplicationPriority = 'stage';
   }
 
   filterApplications(applications: application[]) {

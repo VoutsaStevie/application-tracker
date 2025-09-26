@@ -18,7 +18,7 @@ describe('applicationService', () => {
     const applicationData: CreateapplicationRequest = {
       title: 'Test application',
       description: 'Just a test',
-      priority: 'low',
+      priority: 'job',
       assignedTo: 1
     };
 
@@ -33,7 +33,7 @@ describe('applicationService', () => {
     const applicationData: CreateapplicationRequest = {
       title: 'Test application',
       description: 'Just a test',
-      priority: 'low',
+      priority: 'job',
       assignedTo: 1
     };
 
