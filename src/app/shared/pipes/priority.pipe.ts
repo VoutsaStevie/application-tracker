@@ -6,10 +6,10 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true
 })
 export class PriorityPipe implements PipeTransform {
-  transform(priority: 'low' | 'medium' | 'high'): string {
+  transform(priority: 'job' | 'stage' | 'high'): string {
     const priorityMap = {
-      low: 'Faible',
-      medium: 'Moyenne',
+      job: 'Faible',
+      stage: 'Moyenne',
       high: 'Haute'
     };
 

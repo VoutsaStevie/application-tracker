@@ -11,12 +11,12 @@ describe('PriorityPipe', () => {
     expect(pipe).toBeTruthy();
   });
 
-  it('should translate low priority to "Faible"', () => {
-    expect(pipe.transform('low')).toBe('Faible');
+  it('should translate job priority to "Faible"', () => {
+    expect(pipe.transform('job')).toBe('Faible');
   });
 
-  it('should translate medium priority to "Moyenne"', () => {
-    expect(pipe.transform('medium')).toBe('Moyenne');
+  it('should translate stage priority to "Moyenne"', () => {
+    expect(pipe.transform('stage')).toBe('Moyenne');
   });
 
   it('should translate high priority to "Haute"', () => {
@@ -24,6 +24,6 @@ describe('PriorityPipe', () => {
   });
 
   it('should return original value for unknown priority', () => {
-    expect(pipe.transform('unknown' as unknown as 'low' | 'medium' | 'high')).toBe('unknown');
+    expect(pipe.transform('unknown' as unknown as 'job' | 'stage' | 'high')).toBe('unknown');
   });
 });
