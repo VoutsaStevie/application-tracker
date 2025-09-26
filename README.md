@@ -1,59 +1,153 @@
-# ApplicationTracker
+This App is called Application Tracker:
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.1.
+It is an Angular application for tracking job applications,
+It uses LocalStorage only (no backend),
+The guide below is step-by-step, starting from a fresh Windows PC.
 
-## Development server
+🖥️ 1. Prerequisites – Installations
+1.1 Install Git
 
-To start a local development server, run:
+Download: https://git-scm.com/download/win
+During installation:
 
-```bash
+*Select “Use Git from the Windows Command Prompt”
+Verify installation:
+git --version
+
+1.2 Install Node.js + npm
+Download LTS version: https://nodejs.org/en/download
+Verify installation:
+
+node -v
+npm -v
+
+1.3 Install Angular CLI
+npm install -g @angular/cli
+
+Verify installation:
+
+ng version
+
+1.4 Install VS Code (or another IDE)
+
+Download: https://code.visualstudio.com/
+
+1.5 Install Project Dependencies
+
+Clone the repo:
+
+git clone https://github.com/VoutsaStevie/application-tracker.git
+cd application-Tracker
+
+*Install dependencies:
+npm install
+
+⚙️ 2. Development Setup
+2.1 Run the App
 ng serve
-```
+Default: http://localhost:4200
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+2.2 Project Structure
+C:.
+│   app.config.ts
+│   app.css
+│   app.html
+│   app.routes.ts
+│   app.spec.ts
+│   app.ts
+│
+├───core
+│   ├───guards
+│   │       admin.guard.ts
+│   │       auth.guard.ts
+│   │
+│   ├───interceptors
+│   │       auth.interceptor.ts
+│   │
+│   └───services
+├───features
+│   ├───admin
+│   │   │   admin.routes.ts
+│   │   │
+│   │   └───components
+│   │           admin.components.ts
+│   │
+│   ├───applications
+│   │   │   applications.routes.ts
+│   │   │
+│   │   ├───components
+│   │   │       application-list.component.ts
+│   │   │
+│   │   ├───models
+│   │   │       application.model.ts
+│   │   │
+│   │   └───services
+│   │           application.service.spec.ts
+│   │           application.service.ts
+│   │
+│   └───auth
+│       │   auth.routes.ts
+│       │
+│       ├───components
+│       │   ├───login
+│       │   │       login.component.ts
+│       │   │       login.css
+│       │   │
+│       │   └───register
+│       │           register.component.ts
+│       │           register.css
+│       │
+│       ├───models
+│       │       user.model.ts
+│       │
+│       └───services
+│               auth.service.ts
+│               auth.spec.ts
+│
+├───infrastructure
+└───shared
+    ├───components
+    │   ├───header
+    │   │       header.component.ts
+    │   │
+    │   └───notifications
+    │           notifications.component.ts
+    │
+    ├───directives
+    │       highlight.directive.ts
+    │
+    ├───pipes
+    │       duration.pipe.ts
+    │       priority.pipe.ts
+    │
+    └───services
+            error.service.ts
 
-## Code scaffolding
+🧹 3.Install depencies
+-npm run lint
+-Prettier
+-npm run format
+-Husky + Lint-Staged
+-npx husky install
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+📦 4. Available NPM Scripts
 
-```bash
-ng generate component component-name
-```
+ng serve → Run dev server
+ng build → Build for production
+npm run lint → Run ESLint checks
+npm run format → Run Prettier formatting
+ng test → Run unit tests
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+✨ Functionalities
+👩‍💻 For a Simple User
+-Register/Login
+-Create an application(Enterprise name,Position title)
+-View all applications (organized by phases: Sent, Interview, Verdict).
+-Update an application if details are wrong.
+-Delete an application.
+-Move an application through phases(Sent, Interview, Verdict)
+-Give a verdict on an application(Accepted, Rejected)
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+👨‍💼 For an Admin (all of the above, plus)
+-Create new users.
+-Delete users.
