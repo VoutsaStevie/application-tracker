@@ -126,13 +126,12 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.loading.set(true);
       this.error.set('');
-
-      const { confirmPassword, ...userData } = this.registerForm.value;
-
+      const userData = { ...this.registerForm.value };
+      delete userData.confirmPassword;
       this.authService.register(userData).subscribe({
         next: () => {
           this.loading.set(false);
-          this.router.navigate(['/applications']);
+          this.router.navigate(['auth/login']);
         },
         error: (err) => {
           this.loading.set(false);

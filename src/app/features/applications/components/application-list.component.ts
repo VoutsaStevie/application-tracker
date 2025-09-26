@@ -79,7 +79,7 @@ import { application } from '../models/application.model';
             <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-gray-400 flex justify-between items-start"
                  draggable="true"
                  (dragstart)="onDragStart($event, application)"
-                 (dragend)="onDragEnd($event)"
+                 (dragend)="onDragEnd()"
             >
               <div>
                 <h4 class="font-medium text-gray-900">{{ application.title }}</h4>
@@ -102,7 +102,7 @@ import { application } from '../models/application.model';
             <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-black-600 flex justify-between items-start"
                  draggable="true"
                  (dragstart)="onDragStart($event, application)"
-                 (dragend)="onDragEnd($event)">
+                 (dragend)="onDragEnd()">
               <div>
                 <h4 class="">{{ application.title }}</h4>
                 <p *ngIf="application.description" class="">{{ application.description }}</p>
@@ -124,7 +124,7 @@ import { application } from '../models/application.model';
             <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-green-400 flex justify-between items-start"
                  draggable="true"
                  (dragstart)="onDragStart($event, application)"
-                 (dragend)="onDragEnd($event)">
+                 (dragend)="onDragEnd()">
               <div>
                 <h4 class="font-medium text-gray-900">{{ application.title }}</h4>
                 <p *ngIf="application.description" class="text-sm text-gray-600 mb-3">{{ application.description }}</p>
@@ -181,8 +181,9 @@ export class applicationListComponent {
     this.draggedapplication = application;
     event.dataTransfer?.setData('text/plain', application.id.toString());
   }
-  onDragEnd(event: DragEvent) { this.draggedapplication = null; }
-
+onDragEnd() {
+  this.draggedapplication = null; // No unused parameter!
+}
   async onDrop(event: DragEvent, newStatus: application['status']) {
     event.preventDefault();
     if (!this.draggedapplication) return;

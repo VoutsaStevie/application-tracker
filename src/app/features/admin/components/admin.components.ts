@@ -13,9 +13,11 @@ import { User } from '../../auth/models/user.model';
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Interface d'Administration</h1>
-        <p class="text-gray-600 mt-2">Gérez les utilisateurs</p>
+          <button
+              (click)="addUser()" class="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >Ajouter un utilisateur
+        </button>
       </div>
-
       <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200">
           <h2 class="text-xl font-semibold text-gray-900">Gestion des Utilisateurs</h2>
@@ -76,7 +78,7 @@ import { User } from '../../auth/models/user.model';
                             Supprimer
                           </button>
                         } @else {
-                          <span class="text-gray-400">Admin protégé</span>
+                          <span class="text-gray-400">Admin</span>
                         }
                       </td>
                     </tr>
@@ -127,5 +129,9 @@ export class AdminComponent implements OnInit {
         console.error('Erreur lors de la suppression:', error);
       }
     }
+  }
+
+  addUser() { 
+    this.router.navigate(['/auth/register']);
   }
 }
