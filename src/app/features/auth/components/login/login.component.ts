@@ -12,17 +12,13 @@ import { applicationService } from '../../../applications/services/application.s
   template: `
     <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div class="max-w-md w-full space-y-8">
-        <div>
-          <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Connexion à votre compte
-          </h2>
-        </div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Connexion à votre compte
+        </h2>
+
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
-          <!-- Email -->
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">
-              Adresse email
-            </label>
+            <label for="email" class="block text-sm font-medium text-gray-700">Adresse email</label>
             <input
               id="email"
               type="email"
@@ -30,18 +26,12 @@ import { applicationService } from '../../../applications/services/application.s
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               [class.border-red-500]="isFieldInvalid('email')"
             />
-            @if (isFieldInvalid('email')) {
-              <p class="mt-1 text-sm text-red-600">
-                {{ getFieldError('email') }}
-              </p>
-            }
+            <p *ngIf="isFieldInvalid('email')" class="mt-1 text-sm text-red-600">
+              {{ getFieldError('email') }}
+            </p>
           </div>
-
-          <!-- Password -->
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">
-              Mot de passe
-            </label>
+            <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
             <input
               id="password"
               type="password"
@@ -49,35 +39,23 @@ import { applicationService } from '../../../applications/services/application.s
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               [class.border-red-500]="isFieldInvalid('password')"
             />
-            @if (isFieldInvalid('password')) {
-              <p class="mt-1 text-sm text-red-600">
-                {{ getFieldError('password') }}
-              </p>
-            }
+            <p *ngIf="isFieldInvalid('password')" class="mt-1 text-sm text-red-600">
+              {{ getFieldError('password') }}
+            </p>
           </div>
-
-          <!-- Submit Button -->
           <div>
             <button
               type="submit"
               [disabled]="loginForm.invalid || loading()"
               class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-400 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
-              @if (loading()) {
-                <span class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
-                Connexion en cours...
-              } @else {
-                Se connecter
-              }
+              <span *ngIf="loading()" class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+              {{ loading() ? 'Connexion en cours...' : 'Se connecter' }}
             </button>
           </div>
-
-          <!-- Error Message -->
-          @if (error()) {
-            <div class="bg-red-50 border border-red-200 rounded-md p-4">
-              <p class="text-sm text-red-600">{{ error() }}</p>
-            </div>
-          }
+          <div *ngIf="error()" class="bg-red-50 border border-red-200 rounded-md p-4">
+            <p class="text-sm text-red-600">{{ error() }}</p>
+          </div>
         </form>
       </div>
     </div>

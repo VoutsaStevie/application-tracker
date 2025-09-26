@@ -27,7 +27,6 @@ export class AuthService {
     }
   ];
 
-  // Mock data - mots de passe (en réalité, ils seraient hashés)
   private defaultPasswords: Record<string, string> = {
     'admin@example.com': 'admin123',
     'user@example.com': 'user123'
@@ -39,8 +38,6 @@ export class AuthService {
   constructor() {
 
     this.loadUsersFromStorage();
-
-    // Vérifier s'il y a un utilisateur en session
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       this.currentUser.set(JSON.parse(savedUser));
@@ -52,8 +49,6 @@ export class AuthService {
     const password = this.passwords[credentials.email];
 
     if (user && password === credentials.password) {
-      // Simuler un délai réseau
-      //this.setCurrentUser(user); // Set the current user after successful login
       return of(user).pipe(
         delay(500),
         tap(loggedInUser => this.setCurrentUser(loggedInUser))
@@ -64,13 +59,12 @@ export class AuthService {
   }
 
   register(userData: RegisterRequest): Observable<User> {
-    // Vérifier si l'email existe déjà
     const existingUser = this.users.find(u => u.email === userData.email);
     if (existingUser) {
       return throwError(() => new Error('Cet email est déjà utilisé'));
     }
 
-    // Créer un nouvel utilisateur
+    // creation nouvel utilisateur
     const newUser: User = {
       id: this.users.length + 1,
       name: userData.name,
@@ -86,7 +80,7 @@ export class AuthService {
     console.warn('Registered users after:', this.users);
 
     // Simuler un délai réseau
-    this.setCurrentUser(newUser); // Set the current user after successful registration
+    this.setCurrentUser(newUser);
     return of(newUser).pipe(delay(500));
   }
 
@@ -109,7 +103,6 @@ export class AuthService {
     return user ? `mock-token-${user.id}` : null;
   }
 
-  // Méthode pour définir l'utilisateur connecté (utilisée après login/register)
   private setCurrentUser(user: User): void {
     this.currentUser.set(user);
     localStorage.setItem('currentUser', JSON.stringify(user));
@@ -120,7 +113,6 @@ export class AuthService {
     return of(this.users).pipe(delay(300));
   }
 
-  // Méthode pour supprimer un utilisateur (pour l'interface admin)
   deleteUser(userId: number): Observable<void> {
     const index = this.users.findIndex(u => u.id === userId);
     if (index !== -1) {
@@ -129,7 +121,6 @@ export class AuthService {
     }
     return throwError(() => new Error('Utilisateur non trouvé'));
   }
-
 
   private saveUsersToStorage(): void {
     localStorage.setItem('users', JSON.stringify(this.users));
@@ -144,7 +135,6 @@ export class AuthService {
       this.users = JSON.parse(savedUsers);
       this.passwords = JSON.parse(savedPasswords);
     } else{
-      // Si aucun utilisateur n'est sauvegardé, initialiser avec les utilisateurs par défaut
       this.users = [...this.defaultUsers];
       this.passwords = { ...this.defaultPasswords };
       this.saveUsersToStorage();

@@ -11,7 +11,7 @@ export const routes: Routes = [
   },
   {
     path: 'applications',
-    canActivate: [authGuard], // Protection par authentification
+    canActivate: [authGuard],
     loadChildren: () => import('./features/applications/applications.routes').then(m => m.applications_ROUTES)
   },
   {
@@ -20,7 +20,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [authGuard, adminGuard], // Protection admin
+    canActivate: [authGuard, adminGuard],
     loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
   }
 ];

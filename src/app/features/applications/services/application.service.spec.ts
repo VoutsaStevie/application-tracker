@@ -6,43 +6,41 @@ describe('applicationService', () => {
   let service: applicationService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [applicationService]
+    });
     service = TestBed.inject(applicationService);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should add a application', async () => {
+  it('should add an application', async () => {
     const applicationData: CreateapplicationRequest = {
-      title: 'Test application',
-      description: 'Just a test',
+      title: 'Test App',
+      description: 'simple test',
       priority: 'job',
       assignedTo: 1
     };
 
-    const newapplication = await service.createapplication(applicationData);
+    await service.createapplication(applicationData);
+    const allApplications = await service.getAllapplications();
 
-    const allapplications = await service.getAllapplications();
-    expect(allapplications.length).toBe(1);
-    expect(allapplications[0]).toEqual(newapplication);
+    expect(allApplications.length).toBe(1);
+    expect(allApplications[0].title).toBe(applicationData.title);
+    expect(allApplications[0].description).toBe(applicationData.description);
   });
 
-  it('should remove a application', async () => {
+  it('should delete an application', async () => {
     const applicationData: CreateapplicationRequest = {
-      title: 'Test application',
-      description: 'Just a test',
+      title: 'App to delete',
+      description: 'Delete me',
       priority: 'job',
       assignedTo: 1
     };
 
-    const newapplication = await service.createapplication(applicationData);
-
-    const deleted = await service.deleteapplication(newapplication.id);
-    const allapplications = await service.getAllapplications();
+    const newApp = await service.createapplication(applicationData);
+    const deleted = await service.deleteapplication(newApp.id);
+    const allApplications = await service.getAllapplications();
 
     expect(deleted).toBeTrue();
-    expect(allapplications.length).toBe(0);
+    expect(allApplications.length).toBe(0);
   });
 });

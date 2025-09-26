@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { App } from './app'; // <-- ton composant principal réel
+import { App } from './app';
 import { ActivatedRoute } from '@angular/router';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App], // si App est standalone
-      providers: [{ provide: ActivatedRoute, useValue: {} }] // mock minimal
+      imports: [App],
+      providers: [{ provide: ActivatedRoute, useValue: {} }]
     }).compileComponents();
   });
 
@@ -20,7 +20,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('applicationList App');
+    expect(compiled.querySelector('h1')?.textContent).toContain('AT-ApplicationTrack');
 
   });
 });
