@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 import { User, LoginRequest, RegisterRequest } from '../models/user.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private currentUser = signal<User | null>(null);
@@ -17,26 +17,25 @@ export class AuthService {
       id: 1,
       name: 'Admin User',
       email: 'admin@example.com',
-      role: 'admin'
+      role: 'admin',
     },
     {
       id: 2,
       name: 'Normal User',
       email: 'user@example.com',
-      role: 'user'
-    }
+      role: 'user',
+    },
   ];
 
   private defaultPasswords: Record<string, string> = {
     'admin@example.com': 'admin123',
-    'user@example.com': 'user123'
+    'user@example.com': 'user123',
   };
 
   private users: User[] = [];
   private passwords: Record<string, string> = {};
 
   constructor() {
-
     this.loadUsersFromStorage();
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
@@ -45,13 +44,13 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<User> {
-    const user = this.users.find(u => u.email === credentials.email);
+    const user = this.users.find((u) => u.email === credentials.email);
     const password = this.passwords[credentials.email];
 
     if (user && password === credentials.password) {
       return of(user).pipe(
         delay(500),
-        tap(loggedInUser => this.setCurrentUser(loggedInUser))
+        tap((loggedInUser) => this.setCurrentUser(loggedInUser)),
       );
     } else {
       return throwError(() => new Error('Email ou mot de passe incorrect'));
@@ -59,27 +58,20 @@ export class AuthService {
   }
 
   register(userData: RegisterRequest): Observable<User> {
-    const existingUser = this.users.find(u => u.email === userData.email);
+    const existingUser = this.users.find((u) => u.email === userData.email);
     if (existingUser) {
       return throwError(() => new Error('Cet email est déjà utilisé'));
     }
-
-    // creation nouvel utilisateur
     const newUser: User = {
       id: this.users.length + 1,
       name: userData.name,
       email: userData.email,
-      role: 'user'
+      role: 'user',
     };
 
-    // Ajouter aux mock data
     this.users.push(newUser);
     this.passwords[userData.email] = userData.password;
-    console.warn('Registered users before:', this.users);
     this.saveUsersToStorage();
-    console.warn('Registered users after:', this.users);
-
-    // Simuler un délai réseau
     this.setCurrentUser(newUser);
     return of(newUser).pipe(delay(500));
   }
@@ -97,7 +89,6 @@ export class AuthService {
     return !!this.currentUser();
   }
 
-  // Cette méthode pourrait être utilisée par un guard ou un intercepteur
   getToken(): string | null {
     const user = this.currentUser();
     return user ? `mock-token-${user.id}` : null;
@@ -114,7 +105,7 @@ export class AuthService {
   }
 
   deleteUser(userId: number): Observable<void> {
-    const index = this.users.findIndex(u => u.id === userId);
+    const index = this.users.findIndex((u) => u.id === userId);
     if (index !== -1) {
       this.users.splice(index, 1);
       return of(void 0).pipe(delay(300));
@@ -134,7 +125,7 @@ export class AuthService {
     if (savedUsers && savedPasswords) {
       this.users = JSON.parse(savedUsers);
       this.passwords = JSON.parse(savedPasswords);
-    } else{
+    } else {
       this.users = [...this.defaultUsers];
       this.passwords = { ...this.defaultPasswords };
       this.saveUsersToStorage();
