@@ -4,10 +4,10 @@ import { CreateapplicationRequest } from '../models/application.model';
 
 describe('applicationService', () => {
   let service: applicationService;
-
   beforeEach(() => {
+    localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [applicationService]
+      providers: [applicationService],
     });
     service = TestBed.inject(applicationService);
   });
@@ -17,7 +17,7 @@ describe('applicationService', () => {
       title: 'Test App',
       description: 'simple test',
       priority: 'job',
-      assignedTo: 1
+      assignedTo: 1,
     };
 
     await service.createapplication(applicationData);
@@ -33,7 +33,7 @@ describe('applicationService', () => {
       title: 'App to delete',
       description: 'Delete me',
       priority: 'job',
-      assignedTo: 1
+      assignedTo: 1,
     };
 
     const newApp = await service.createapplication(applicationData);
