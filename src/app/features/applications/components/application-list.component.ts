@@ -72,8 +72,13 @@ import { application } from '../models/application.model';
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="bg-gray-50 rounded-lg p-4 max-h-[600px] overflow-y-auto"
            (dragover)="onDragOver($event)" (drop)="onDrop($event, 'application')">
+        <span class="text-sm text-gray-500">({{ 
+            applicationService.pendingapplications().length + 
+            applicationService.inProgressapplications().length + 
+            applicationService.completedapplications().length }})
+        </span>
+
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Candidatures envoyées</h3>
-        <span class="text-sm text-gray-500">({{ applicationService.pendingapplications().length }})</span>
         <div class="space-y-3">
           @for (application of filterApplications(applicationService.pendingapplications()); track application.id) {
             <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-gray-400 flex justify-between items-start"
